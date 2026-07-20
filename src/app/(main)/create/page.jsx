@@ -1,9 +1,17 @@
+"use client"
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Upload, X } from "lucide-react";
 
 export default function CreateProblemPage() {
+  const router = useRouter();
+  const [posterType, setPosterType] = useState("individual");
+  const [projectType, setProjectType] = useState("paid");
+
   return (
     <div className="mx-auto max-w-3xl flex flex-col gap-8 pb-12">
       <div>
@@ -18,10 +26,48 @@ export default function CreateProblemPage() {
           <FieldGroup>
             {/* Title */}
             <Field>
-              <FieldLabel htmlFor="title" className="text-base">Problem Title</FieldLabel>
-              <FieldDescription>A clear, concise title for the problem.</FieldDescription>
+              <FieldLabel htmlFor="title" className="text-base">Problem Statement</FieldLabel>
+              <FieldDescription>A clear, concise statement of the problem.</FieldDescription>
               <Input id="title" placeholder="e.g., Need Hospital Queue Management System" className="h-12" required />
             </Field>
+
+            {/* Individual or Organization */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 rounded-lg bg-muted/50 border border-border/50">
+              <div className="space-y-4">
+                <FieldLabel className="text-base">Posting As</FieldLabel>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="posterType" 
+                      value="individual" 
+                      checked={posterType === "individual"}
+                      onChange={() => setPosterType("individual")}
+                      className="accent-primary h-4 w-4" 
+                    />
+                    Individual
+                  </label>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="posterType" 
+                      value="organization" 
+                      checked={posterType === "organization"}
+                      onChange={() => setPosterType("organization")}
+                      className="accent-primary h-4 w-4" 
+                    />
+                    Organization
+                  </label>
+                </div>
+              </div>
+              
+              {posterType === "organization" && (
+                <Field>
+                  <FieldLabel htmlFor="orgName">Organization Name</FieldLabel>
+                  <Input id="orgName" placeholder="e.g., Acme Corp" required />
+                </Field>
+              )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Category */}
@@ -31,8 +77,9 @@ export default function CreateProblemPage() {
                   id="category" 
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
+                  defaultValue=""
                 >
-                  <option value="" disabled selected>Select a category</option>
+                  <option value="" disabled>Select a category</option>
                   <option value="healthcare">Healthcare</option>
                   <option value="education">Education</option>
                   <option value="ai">AI & Machine Learning</option>
@@ -48,8 +95,9 @@ export default function CreateProblemPage() {
                   id="timeline" 
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   required
+                  defaultValue=""
                 >
-                  <option value="" disabled selected>Select timeline</option>
+                  <option value="" disabled>Select timeline</option>
                   <option value="1-week">Less than 1 week</option>
                   <option value="1-month">1 month</option>
                   <option value="3-months">1-3 months</option>
@@ -72,36 +120,35 @@ export default function CreateProblemPage() {
               />
             </Field>
             
-            {/* Skills Needed */}
-            <Field>
-              <FieldLabel htmlFor="skills" className="text-base">Skills Needed</FieldLabel>
-              <FieldDescription>Comma separated list of skills (e.g., React, Node, AWS)</FieldDescription>
-              <Input id="skills" placeholder="React, Node.js, AWS, PostgreSQL" required />
-            </Field>
-            
-            {/* Project Type (Open Source / Paid) & Budget */}
+            {/* Project Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 rounded-lg bg-muted/50 border border-border/50">
               <div className="space-y-4">
                 <FieldLabel className="text-base">Project Type</FieldLabel>
                 <div className="flex gap-4">
                   <label className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input type="checkbox" className="rounded border-input h-4 w-4 accent-primary" />
+                    <input 
+                      type="radio" 
+                      name="projectType" 
+                      value="paid" 
+                      checked={projectType === "paid"}
+                      onChange={() => setProjectType("paid")}
+                      className="accent-primary h-4 w-4" 
+                    />
                     Paid Project
                   </label>
                   <label className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input type="checkbox" className="rounded border-input h-4 w-4 accent-primary" defaultChecked />
+                    <input 
+                      type="radio" 
+                      name="projectType" 
+                      value="open_source" 
+                      checked={projectType === "open_source"}
+                      onChange={() => setProjectType("open_source")}
+                      className="accent-primary h-4 w-4" 
+                    />
                     Open Source
                   </label>
                 </div>
               </div>
-              
-              <Field>
-                <FieldLabel htmlFor="budget">Budget (if Paid)</FieldLabel>
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-muted-foreground text-sm">₹</span>
-                  <Input id="budget" type="number" placeholder="35,000" className="pl-7" />
-                </div>
-              </Field>
             </div>
             
             {/* Upload Images */}
@@ -130,7 +177,7 @@ export default function CreateProblemPage() {
         </div>
 
         <div className="flex items-center justify-end gap-4">
-          <Button variant="ghost" type="button">Cancel</Button>
+          <Button variant="ghost" type="button" onClick={() => router.push('/')}>Cancel</Button>
           <Button type="submit" size="lg" className="px-8">Publish Problem</Button>
         </div>
       </form>

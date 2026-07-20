@@ -6,8 +6,8 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { PasswordInput } from "@/components/auth/password-input";
 
 export const metadata = {
-  title: "Reset Password | SolveHub",
-  description: "Set a new password for your SolveHub account",
+  title: "Reset Password | CommUnity",
+  description: "Set a new password for your CommUnity account",
 };
 
 export default function ResetPasswordPage() {

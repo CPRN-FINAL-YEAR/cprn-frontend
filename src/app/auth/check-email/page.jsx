@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 
 export const metadata = {
-  title: "Check Your Email | SolveHub",
+  title: "Check Your Email | CommUnity",
   description: "Check your email for reset instructions",
 };
 

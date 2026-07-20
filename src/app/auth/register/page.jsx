@@ -1,8 +1,8 @@
 import { RegisterForm } from "@/components/register-form"
 
 export const metadata = {
-  title: "Register | SolveHub",
-  description: "Create a new SolveHub account",
+  title: "Register | CommUnity",
+  description: "Create a new CommUnity account",
 };
 
 export default function RegisterPage() {

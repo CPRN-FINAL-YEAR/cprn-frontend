@@ -1,8 +1,9 @@
-import { Inter, JetBrains_Mono, PT_Serif } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono, PT_Serif } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-const fontSans = Inter({
+const fontSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
 });
@@ -19,7 +20,7 @@ const fontSerif = PT_Serif({
 });
 
 export const metadata = {
-  title: "SolveHub",
+  title: "CommUnity",
   description: "Build Solutions That Matter.",
 };
 
@@ -32,7 +33,9 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col font-sans">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
+          <TooltipProvider>
+            {children}
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

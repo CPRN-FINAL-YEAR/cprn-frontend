@@ -1,11 +1,14 @@
+"use client"
+
 import Link from "next/link";
+import { useSearchParams, usePathname } from "next/navigation";
+import { problems } from "@/data/mock-problems";
 import { cn } from "@/lib/utils";
-import { 
-  Home, 
-  TrendingUp, 
-  Compass, 
+import {
+  Home,
+  TrendingUp,
+  Compass,
   ChevronUp,
-  ChevronDown,
   Stethoscope,
   GraduationCap,
   Landmark,
@@ -13,99 +16,195 @@ import {
   Info,
   Megaphone,
   HelpCircle,
-  BookOpen
+  Laptop,
+  Palette,
+  Atom,
+  BarChart,
+  Coffee
 } from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarSeparator,
+} from "@/components/ui/sidebar";
 
 export function LeftSidebar() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  
+  const sort = searchParams.get("sort");
+  const category = searchParams.get("category");
+  
+  const isHome = pathname === "/" && !sort && !category;
+  const isPopular = sort === "popular";
+
+  const countCategory = (cat) => problems.filter(p => p.category.toLowerCase() === cat.toLowerCase()).length;
+
   return (
-    <aside className="fixed top-14 z-30 hidden h-[calc(100vh-3.5rem)] w-full shrink-0 overflow-y-auto border-r border-border/40 md:sticky md:block py-4 pr-4">
-      <div className="flex flex-col pl-2">
-        
+    <Sidebar className="!top-14 !h-[calc(100vh-3.5rem)] border-r border-border custom-scrollbar">
+      <SidebarContent className="custom-scrollbar pt-4">
+
         {/* Core Feeds Section */}
-        <div className="flex flex-col space-y-1 mb-2">
-          <Link href="/" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] transition-colors text-foreground hover:bg-muted/60">
-            <Home className="h-6 w-6 text-foreground" strokeWidth={1.5} /> Home
-          </Link>
-          <Link href="/trending" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] font-medium transition-colors bg-muted text-foreground">
-            <TrendingUp className="h-6 w-6 text-foreground" strokeWidth={2} /> Popular
-          </Link>
-          <Link href="/explore" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] transition-colors text-foreground hover:bg-muted/60">
-            <Compass className="h-6 w-6 text-foreground" strokeWidth={1.5} /> Explore
-          </Link>
-        </div>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/" />} isActive={isHome}>
+                  <Home />
+                  <span>Home</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?sort=popular" />} isActive={isPopular}>
+                  <TrendingUp />
+                  <span>Popular</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?sort=popular" />}>
+                  <Compass />
+                  <span>Explore</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-        <hr className="border-border/60 mx-4 my-4" />
+        <SidebarSeparator className="my-2" />
 
-        {/* Topics Section */}
-        <div className="mb-2">
-          <div className="flex items-center justify-between px-4 mb-2 group cursor-pointer hover:bg-muted/40 rounded-md py-1">
-            <h3 className="text-[12px] font-medium text-muted-foreground uppercase tracking-widest">
-              Topics
-            </h3>
-            <ChevronUp className="h-4 w-4 text-foreground" strokeWidth={1.5} />
-          </div>
-          <div className="flex flex-col space-y-1">
-            <Link href="/category/healthcare" className="flex items-center justify-between rounded-xl px-4 py-2.5 text-[15px] transition-colors text-foreground hover:bg-muted/60">
-              <div className="flex items-center gap-3">
-                <Stethoscope className="h-6 w-6 text-foreground" strokeWidth={1.5} />
-                <span>Healthcare</span>
-              </div>
-              <ChevronDown className="h-4 w-4 text-foreground" strokeWidth={1.5} />
-            </Link>
-            <Link href="/category/education" className="flex items-center justify-between rounded-xl px-4 py-2.5 text-[15px] transition-colors text-foreground hover:bg-muted/60">
-              <div className="flex items-center gap-3">
-                <GraduationCap className="h-6 w-6 text-foreground" strokeWidth={1.5} />
-                <span>Education</span>
-              </div>
-              <ChevronDown className="h-4 w-4 text-foreground" strokeWidth={1.5} />
-            </Link>
-            <Link href="/category/fintech" className="flex items-center justify-between rounded-xl px-4 py-2.5 text-[15px] transition-colors text-foreground hover:bg-muted/60">
-              <div className="flex items-center gap-3">
-                <Landmark className="h-6 w-6 text-foreground" strokeWidth={1.5} />
-                <span>Fintech</span>
-              </div>
-              <ChevronDown className="h-4 w-4 text-foreground" strokeWidth={1.5} />
-            </Link>
-            <Link href="/category/b2b" className="flex items-center justify-between rounded-xl px-4 py-2.5 text-[15px] transition-colors text-foreground hover:bg-muted/60">
-              <div className="flex items-center gap-3">
-                <Briefcase className="h-6 w-6 text-foreground" strokeWidth={1.5} />
-                <span>B2B Services</span>
-              </div>
-              <ChevronDown className="h-4 w-4 text-foreground" strokeWidth={1.5} />
-            </Link>
-            <button className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[14px] transition-colors text-foreground hover:bg-muted/60 mt-1">
-              See more
-            </button>
-          </div>
-        </div>
+        {/* Domains Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="flex justify-between items-center text-xs tracking-wider text-muted-foreground uppercase">
+            Domains <ChevronUp className="h-4 w-4" />
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?category=healthcare" className="justify-between" />} isActive={category === "healthcare"}>
+                  <div className="flex items-center gap-2">
+                    <Stethoscope />
+                    <span>Healthcare</span>
+                  </div>
+                  <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">{countCategory('healthcare')}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?category=education" className="justify-between" />} isActive={category === "education"}>
+                  <div className="flex items-center gap-2">
+                    <GraduationCap />
+                    <span>Education</span>
+                  </div>
+                  <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">{countCategory('education')}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?category=fintech" className="justify-between" />} isActive={category === "fintech"}>
+                  <div className="flex items-center gap-2">
+                    <Landmark />
+                    <span>Fintech</span>
+                  </div>
+                  <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">{countCategory('fintech')}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?category=b2b services" className="justify-between" />} isActive={category === "b2b services"}>
+                  <div className="flex items-center gap-2">
+                    <Briefcase />
+                    <span>B2B Services</span>
+                  </div>
+                  <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">{countCategory('b2b services')}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
 
-        <hr className="border-border/60 mx-4 my-4" />
+              {/* Dummy Topics */}
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?category=technology" className="justify-between" />} isActive={category === "technology"}>
+                  <div className="flex items-center gap-2">
+                    <Laptop className="h-4 w-4" />
+                    <span>Technology</span>
+                  </div>
+                  <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">{countCategory('technology')}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?category=design" className="justify-between" />} isActive={category === "design"}>
+                  <div className="flex items-center gap-2">
+                    <Palette className="h-4 w-4" />
+                    <span>Design</span>
+                  </div>
+                  <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">{countCategory('design')}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?category=science" className="justify-between" />} isActive={category === "science"}>
+                  <div className="flex items-center gap-2">
+                    <Atom className="h-4 w-4" />
+                    <span>Science</span>
+                  </div>
+                  <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">{countCategory('science')}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?category=marketing" className="justify-between" />} isActive={category === "marketing"}>
+                  <div className="flex items-center gap-2">
+                    <BarChart className="h-4 w-4" />
+                    <span>Marketing</span>
+                  </div>
+                  <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">{countCategory('marketing')}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/?category=lifestyle" className="justify-between" />} isActive={category === "lifestyle"}>
+                  <div className="flex items-center gap-2">
+                    <Coffee className="h-4 w-4" />
+                    <span>Lifestyle</span>
+                  </div>
+                  <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">{countCategory('lifestyle')}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-2" />
 
         {/* Resources Section */}
-        <div className="mb-2">
-          <div className="flex items-center justify-between px-4 mb-2 group cursor-pointer hover:bg-muted/40 rounded-md py-1">
-            <h3 className="text-[12px] font-medium text-muted-foreground uppercase tracking-widest">
-              Resources
-            </h3>
-            <ChevronUp className="h-4 w-4 text-foreground" strokeWidth={1.5} />
-          </div>
-          <div className="flex flex-col space-y-1">
-            <Link href="/about" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] transition-colors text-foreground hover:bg-muted/60">
-              <Info className="h-6 w-6 text-foreground" strokeWidth={1.5} /> About SolveHub
-            </Link>
-            <Link href="/advertise" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] transition-colors text-foreground hover:bg-muted/60">
-              <Megaphone className="h-6 w-6 text-foreground" strokeWidth={1.5} /> Advertise
-            </Link>
-            <Link href="/help" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] transition-colors text-foreground hover:bg-muted/60">
-              <HelpCircle className="h-6 w-6 text-foreground" strokeWidth={1.5} /> Help
-            </Link>
-            <Link href="/blog" className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] transition-colors text-foreground hover:bg-muted/60">
-              <BookOpen className="h-6 w-6 text-foreground" strokeWidth={1.5} /> Blog
-            </Link>
-          </div>
-        </div>
+        <SidebarGroup>
+          <SidebarGroupLabel className="flex justify-between items-center text-xs tracking-wider text-muted-foreground uppercase">
+            Resources <ChevronUp className="h-4 w-4" />
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/about" />}>
+                  <Info />
+                  <span>About CommUnity</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/advertise" />}>
+                  <Megaphone />
+                  <span>Advertise</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/help" />}>
+                  <HelpCircle />
+                  <span>Help</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
 
-      </div>
-    </aside>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+      </SidebarContent>
+    </Sidebar>
   );
 }

@@ -1,8 +1,8 @@
 import { LoginForm } from "@/components/login-form"
 
 export const metadata = {
-  title: "Login | SolveHub",
-  description: "Login to your SolveHub account",
+  title: "Login | CommUnity",
+  description: "Login to your CommUnity account",
 };
 
 export default function LoginPage() {
