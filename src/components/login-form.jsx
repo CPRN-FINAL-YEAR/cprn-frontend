@@ -1,3 +1,9 @@
+'use client';
+
+import { useState } from "react"
+import { useAuth } from "@/contexts/auth-context"
+import { GoogleLogin } from "@react-oauth/google"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -42,11 +48,40 @@ export function LoginForm({
   className,
   ...props
 }) {
+  const { login, googleLogin, loading } = useAuth();
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    const formData = new FormData(e.target);
+    const email = formData.get('email');
+    const password = formData.get('password');
+    
+    try {
+      await login(email, password);
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      await googleLogin(credentialResponse.credential);
+    } catch (err) {
+      setError(err.message || 'Google login failed');
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('Google login failed');
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -56,33 +91,41 @@ export function LoginForm({
               </div>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input id="email" type="email" placeholder="m@example.com" required />
+                <Input id="email" name="email" type="email" placeholder="m@example.com" required disabled={loading} />
               </Field>
               <Field>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a href="#" className="ml-auto text-sm underline-offset-2 hover:underline">
+                  <Link href="/auth/forgot-password" className="ml-auto text-sm underline-offset-2 hover:underline">
                     Forgot your password?
-                  </a>
+                  </Link>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" name="password" type="password" required disabled={loading} />
               </Field>
+              {error && (
+                <div className="text-sm text-destructive font-medium">{error}</div>
+              )}
               <Field>
-                <Button type="submit">Login</Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? 'Logging in...' : 'Login'}
+                </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
               </FieldSeparator>
               <Field className="grid grid-cols-3 gap-4">
-                <Button variant="outline" type="button" title="Login with Google">
-                  <GoogleIcon className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" type="button" title="Login with LinkedIn">
+                <div className="col-span-3 flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                  />
+                </div>
+                {/* <Button variant="outline" type="button" title="Login with LinkedIn" disabled>
                   <LinkedinIcon className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" type="button" title="Login with GitHub">
+                <Button variant="outline" type="button" title="Login with GitHub" disabled>
                   <GithubIcon className="h-4 w-4" fill="none" />
-                </Button>
+                </Button> */}
               </Field>
               <FieldDescription className="text-center">
                 Don&apos;t have an account? <a href="/auth/register" className="font-medium hover:underline text-primary">Sign up</a>

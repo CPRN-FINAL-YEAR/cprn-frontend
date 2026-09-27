@@ -1,3 +1,8 @@
+'use client';
+
+import { useState } from "react"
+import { useAuth } from "@/contexts/auth-context"
+import { GoogleLogin } from "@react-oauth/google"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -42,11 +47,41 @@ export function RegisterForm({
   className,
   ...props
 }) {
+  const { register, googleLogin, loading } = useAuth();
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    const formData = new FormData(e.target);
+    const name = formData.get('name');
+    const email = formData.get('email');
+    const password = formData.get('password');
+    
+    try {
+      await register(email, password, name);
+    } catch (err) {
+      setError(err.message || 'Registration failed');
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      await googleLogin(credentialResponse.credential);
+    } catch (err) {
+      setError(err.message || 'Google login failed');
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('Google login failed');
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create an account</h1>
@@ -56,32 +91,40 @@ export function RegisterForm({
               </div>
               <Field>
                 <FieldLabel htmlFor="name">Full Name</FieldLabel>
-                <Input id="name" placeholder="John Doe" required />
+                <Input id="name" name="name" placeholder="John Doe" required disabled={loading} />
               </Field>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input id="email" type="email" placeholder="m@example.com" required />
+                <Input id="email" name="email" type="email" placeholder="m@example.com" required disabled={loading} />
               </Field>
               <Field>
                 <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Input id="password" type="password" required />
+                <Input id="password" name="password" type="password" required disabled={loading} />
               </Field>
+              {error && (
+                <div className="text-sm text-destructive font-medium">{error}</div>
+              )}
               <Field>
-                <Button type="submit">Sign up</Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? 'Signing up...' : 'Sign up'}
+                </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
               </FieldSeparator>
               <Field className="grid grid-cols-3 gap-4">
-                <Button variant="outline" type="button" title="Login with Google">
-                  <GoogleIcon className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" type="button" title="Login with LinkedIn">
+                <div className="col-span-3 flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                  />
+                </div>
+                {/* <Button variant="outline" type="button" title="Login with LinkedIn" disabled>
                   <LinkedinIcon className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" type="button" title="Login with GitHub">
+                <Button variant="outline" type="button" title="Login with GitHub" disabled>
                   <GithubIcon className="h-4 w-4" fill="none" />
-                </Button>
+                </Button> */}
               </Field>
               <FieldDescription className="text-center">
                 Already have an account? <a href="/auth/login" className="font-medium hover:underline text-primary">Login</a>

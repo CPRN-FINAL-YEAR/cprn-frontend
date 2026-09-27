@@ -1,7 +1,6 @@
 import { Plus_Jakarta_Sans, JetBrains_Mono, PT_Serif } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Providers } from "@/components/providers";
 
 const fontSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -31,12 +30,10 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
       className={`${fontSans.variable} ${fontMono.variable} ${fontSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <TooltipProvider>
-            {children}
-          </TooltipProvider>
-        </ThemeProvider>
+      <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

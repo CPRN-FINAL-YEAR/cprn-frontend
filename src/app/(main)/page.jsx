@@ -1,7 +1,6 @@
 import { ProblemCard } from "@/components/feed/problem-card";
-import { Button } from "@/components/ui/button";
-import { problems } from "@/data/mock-problems";
 import { FeedFilter } from "@/components/feed/feed-filter";
+import { mapProblem } from "@/lib/mappers";
 import { Suspense } from "react";
 
 export default async function FeedPage({ searchParams }) {
@@ -9,18 +8,21 @@ export default async function FeedPage({ searchParams }) {
   const sort = params?.sort;
   const category = params?.category;
 
-  let displayProblems = [...problems];
+  const queryParams = new URLSearchParams();
+  if (category) queryParams.append('category', category);
+  if (sort) queryParams.append('sort', sort);
 
-  if (category) {
-    displayProblems = displayProblems.filter(p => p.category.toLowerCase() === category.toLowerCase());
-  }
-
-  if (sort === "popular") {
-    displayProblems.sort((a, b) => (b.stats?.views || 0) - (a.stats?.views || 0));
-  } else if (sort === "likes") {
-    displayProblems.sort((a, b) => (b.stats?.likes || 0) - (a.stats?.likes || 0));
-  } else if (sort === "comments") {
-    displayProblems.sort((a, b) => (b.stats?.comments || 0) - (a.stats?.comments || 0));
+  let displayProblems = [];
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/problems?${queryParams.toString()}`, {
+      cache: 'no-store'
+    });
+    if (res.ok) {
+      const data = await res.json();
+      displayProblems = data.map(mapProblem);
+    }
+  } catch (error) {
+    console.error("Failed to fetch problems:", error);
   }
 
   let heading = "Main Feed";
